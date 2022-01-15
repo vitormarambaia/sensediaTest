@@ -1,0 +1,26 @@
+{
+  "name": "sensedia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitormarambaia/sensediaTest.git"
+  },
+  "author": "Vitor Marambaia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vitormarambaia/sensediaTest/issues"
+  },
+  "homepage": "https://github.com/vitormarambaia/sensediaTest#readme",
+  "dependencies": {
+    "jest": "^27.4.7",
+    "supertest": "^6.2.1"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^8.0.0-rc.2"
+  }
+}
