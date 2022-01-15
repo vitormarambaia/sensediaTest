@@ -1,6 +1,5 @@
 const request = require("supertest");
 
-
 const keyApi = "bb0afd0f2da95c44fcc727b34d640d9a";
 const tokenApi = "3b5433627f73e9fff7f244f079f263dc147f6457463334ccefac3844ec6d9e08";
 const idList = "55ba3876762755e715f07921"
@@ -8,16 +7,8 @@ const auth = "?key="+keyApi+"&token="+tokenApi;
 const apiUrl = "https://api.trello.com/";
 let cardId;
 
-// async function getIdCard() {
-//     const response = await request(apiUrl)
-//     .get(apiUrl+"1/lists/"+idList+"/cards"+auth)
 
-//     return response
-// }
-
-
-
-describe("Testar Autenticação Usuário", () => {
+describe("GET 1/members/me", () => {
     it("should return 200 and check property 'id' exist", async () => {
         const response = await request(apiUrl)
         .get("1/members/me/"+auth)
@@ -36,45 +27,65 @@ describe("Testar Autenticação Usuário", () => {
     });
 });
 
-describe("Testar Edição de Card", () => {
-    it("O usuário deve criar um card", async () => {
+describe("POST 1/cards", () => {
+    it("should return 200 and check name 'NewCard'", async () => {
         const response = await request(apiUrl)
         .post("1/cards"+auth+"&idList="+idList)
-        .send({ name:"card de teste send"})
+        .send({ name:"NewCard"})
         .expect(200)
         .then(response => {
-            expect(response.body.name).toEqual("card de teste send")
+            expect(response.body.name).toEqual("NewCard")
             const { id } = response.body
             cardId = id
         })
     });
-    
-    it("O usuário deve editar o card", async () => {
-        const response = await request(apiUrl)
-        .put("1/cards"+auth+cardId)
-        .send({ name:"new card de teste send"})
-        .expect(200)
-        expect(response.body.name).toEqual("new card de teste send")
-    });
 
-    // it("O usuário deve editar o card", async () => {
-    //     const res = await request(apiUrl)
-    //     .post(postCard+auth+idList+"&name=Card de Teste")
-    //     .expect(200)
-    //     .then(response => {
-    //         expect(response.body).toHaveProperty("name")
-    //     });
-    // });
+    it("should return 400 because isn't value for 'idList'", async () => {
+        const response = await request(apiUrl)
+        .post("1/cards"+auth)
+        .send({ name:"NewCard2"})
+        .expect(400)
+        .then(response => {
+            expect(response.text).toEqual("invalid value for idList");
+        })
+    });
+    
 });
 
-// describe("Function Delete", () => {
-//     it("deve deletar card", async () => {
-//         const response = await request(apiUrl)
-//         .get("1/cards"+auth+idList)
-//         .query({name: "card de teste send"})
-//         .del("")
-//     })
-// })
+describe("PUT 1/cards/", () => {
+    it("should return 200 and check name 'EditCard'", async () => {
+        const response = await request(apiUrl)
+        .put("1/cards/"+cardId+auth)
+        .send({ name:"EditCard"})
+        .expect(200)
+        .then(response => {
+            expect(response.body.name).toEqual("EditCard")
+        })
+    });
+
+    it("should return 404 and check name 'EditCard'", async () => {
+        const response = await request(apiUrl)
+        .put("1/cards/"+auth)
+        .send({ name:"EditCard"})
+        .expect(404)
+        .then(response => {
+            expect(response.text).not.toHaveProperty("body");
+        })
+    });
+})
+
+describe("DELETE 1/cards/", () => {
+    it("should return 200 and delete card", async () => {
+        const response = await request(apiUrl)
+        .delete("1/cards/"+cardId+auth)
+        .expect(200)
+        .then(() => {
+             return request(apiUrl)
+            .del("1/cards/"+cardId+auth)
+            .expect(404)
+        });
+    })
+})
   
 //     it("should return 404 with 'The user was not found'", () => {
 //       return request(apiBoard)
